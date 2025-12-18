@@ -21,7 +21,9 @@ provider "azurerm" {
 variable "f5_license_key" {
   description = "Dein F5 BYOL Lizenzschlüssel"
   type        = string
-  sensitive   = true
+  // sensitive   = true
+  default = "OWRFG-OEAZN-JQFVI-NSOKU-LUOTGFU"
+  // default = "LXINY-FSZDI-UOGXU-KUCHW-KTDYHPG"
 }
 
 variable "admin_password" {
@@ -118,7 +120,7 @@ resource "azurerm_linux_virtual_machine" "bigip" {
 
   # SSH Key aktivieren
   admin_ssh_key {
-    username   = "admin"
+    username   = "adminuser"
     public_key = file("~/.ssh/id_rsa.pub")
   }
 
@@ -128,8 +130,15 @@ resource "azurerm_linux_virtual_machine" "bigip" {
     publisher = "f5-networks"
     offer     = "f5-big-ip-byol"
     sku       = "f5-big-all-1slot-byol"
-    version   = "latest"
+    // urn       = "f5-networks:f5-big-ip-byol:f5-big-ltm-1slot-byol:17.5.103241"
+    version   = "17.5.103241"
   }
+
+  plan {
+    name      = "f5-big-all-1slot-byol"
+    product   = "f5-big-ip-byol"
+    publisher = "f5-networks"
+}
 
   os_disk {
     name                 = "f5-bigip-osdisk"
