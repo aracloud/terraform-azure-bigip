@@ -12,6 +12,7 @@ terraform {
 
 provider "azurerm" {
   features {}
+  subscription_id = "3ab97c04-ca68-41d4-8b83-2b9cf0723c23"
 }
 
 #########################
@@ -33,7 +34,7 @@ variable "admin_password" {
 # Resource Group & Netzwerk
 #########################
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-f5-bigip"
+  name     = "ara-swiss-rg-f5-bigip"
   location = "West Europe"
 }
 
