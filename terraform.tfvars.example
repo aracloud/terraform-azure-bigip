@@ -1,0 +1,9 @@
+prefix = "<prefix-name>"
+
+azure-location = "westus"
+# azure-location = "westeurope"
+# azure-location = "switzerlandnorth"
+
+tag_source_git = "<gitname>"
+tag_owner = "<email>"
+tag_source_host = "<host built from>"
