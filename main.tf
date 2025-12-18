@@ -35,7 +35,7 @@ variable "admin_password" {
 #########################
 resource "azurerm_resource_group" "rg" {
   name     = "ara-swiss-rg-f5-bigip"
-  location = "West Europe"
+  location = "West US"
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -115,6 +115,14 @@ resource "azurerm_linux_virtual_machine" "bigip" {
   network_interface_ids = [
     azurerm_network_interface.nic_mgmt.id
   ]
+
+  # SSH Key aktivieren
+  admin_ssh_key {
+    username   = "admin"
+    public_key = file("~/.ssh/id_rsa.pub")
+  }
+
+  disable_password_authentication = true
 
   source_image_reference {
     publisher = "f5-networks"
