@@ -15,29 +15,22 @@ provider "azurerm" {
   subscription_id = "3ab97c04-ca68-41d4-8b83-2b9cf0723c23"
 }
 
-#########################
-# Variablen (Passe hier an)
-#########################
-variable "f5_license_key" {
-  description = "Dein F5 BYOL Lizenzschlüssel"
-  type        = string
-  // sensitive   = true
-  default = "OWRFG-OEAZN-JQFVI-NSOKU-LUOTGFU"
-  // default = "LXINY-FSZDI-UOGXU-KUCHW-KTDYHPG"
-}
-
-variable "admin_password" {
-  description = "Admin Passwort für BIG-IP"
-  type        = string
-  default     = "P@ssw0rd1234!"
+resource "random_id" "random_id" {
+  byte_length = 2
 }
 
 #########################
 # Resource Group & Netzwerk
 #########################
 resource "azurerm_resource_group" "rg" {
-  name     = "ara-swiss-rg-f5-bigip"
-  location = "West US"
+  name     = "${var.prefix}-rg-f5-bigip-${random_id.random_id.hex}"
+  location = "${var.azure-location}"
+  tags = {
+    source = var.tag_source_git
+    owner  = var.tag_owner
+    host   = var.tag_source_host
+    create = local.today-timestamp
+  }
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -73,6 +66,66 @@ resource "azurerm_network_interface" "nic_mgmt" {
     private_ip_address_allocation = "Dynamic"
     public_ip_address_id          = azurerm_public_ip.mgmt_ip.id
   }
+}
+
+resource "azurerm_network_security_group" "azure_nsg" {
+  name                = "${var.prefix}-nsg"
+  location            = azurerm_resource_group.azure_rg.location
+  resource_group_name = azurerm_resource_group.azure_rg.name
+
+  security_rule {
+    name                       = "Allow-SSH"
+    priority                   = 1000
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = 22
+    source_address_prefix      = ""
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-65500"
+    priority                   = 1100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = 65500
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "Allow-80"
+    priority                   = 1101
+    direction                  = "Inbound"
+    access                     = "Deny"
+    protocol                   = "Tcp"
+    source_port_range          = "*" 
+    destination_port_range     = 80
+    source_address_prefix      = "*" 
+    destination_address_prefix = "*" 
+  }
+
+  security_rule {
+    name                       = "Allow-ICMP"
+    priority                   = 1200
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Icmp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+}
+
+resource "azurerm_network_interface_security_group_association" "azure_nisga_ce" {
+  network_interface_id    = azurerm_network_interface.azure_nic_ce.id
+  network_security_group_id = azurerm_network_security_group.azure_nsg.id
 }
 
 #########################
@@ -129,13 +182,12 @@ resource "azurerm_linux_virtual_machine" "bigip" {
   source_image_reference {
     publisher = "f5-networks"
     offer     = "f5-big-ip-byol"
-    sku       = "f5-big-all-1slot-byol"
-    // urn       = "f5-networks:f5-big-ip-byol:f5-big-ltm-1slot-byol:17.5.103241"
+    sku       = "f5-big-all-2slot-byol"
     version   = "17.5.103241"
   }
 
   plan {
-    name      = "f5-big-all-1slot-byol"
+    name      = "f5-big-all-2slot-byol"
     product   = "f5-big-ip-byol"
     publisher = "f5-networks"
 }
