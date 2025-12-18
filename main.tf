@@ -106,7 +106,7 @@ resource "azurerm_linux_virtual_machine" "bigip" {
   source_image_reference {
     publisher = "f5-networks"
     offer     = "f5-big-ip-byol"
-    sku       = "f5-bigip-virtual-edition-25m-best"
+    sku       = "f5-big-all-1slot-byol"
     version   = "latest"
   }
 
