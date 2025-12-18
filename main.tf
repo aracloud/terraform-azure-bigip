@@ -113,7 +113,7 @@ resource "azurerm_network_security_group" "nsg" {
 
 resource "azurerm_network_interface_security_group_association" "azure_nisga_ce" {
   network_interface_id    = azurerm_network_interface.nic_mgmt.id
-  network_security_group_id = azurerm_network_security_group.azure_nsg.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 #########################
