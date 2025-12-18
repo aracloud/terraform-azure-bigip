@@ -68,10 +68,10 @@ resource "azurerm_network_interface" "nic_mgmt" {
   }
 }
 
-resource "azurerm_network_security_group" "azure_nsg" {
+resource "azurerm_network_security_group" "nsg" {
   name                = "${var.prefix}-nsg"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
 
   security_rule {
     name                       = "Allow-SSH"
@@ -81,7 +81,7 @@ resource "azurerm_network_security_group" "azure_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = 22
-    source_address_prefix      = ""
+    source_address_prefix      = "188.61.92.176/32"
     destination_address_prefix = "*"
   }
 
@@ -93,7 +93,7 @@ resource "azurerm_network_security_group" "azure_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = 65500
-    source_address_prefix      = "*"
+    source_address_prefix      = "188.61.92.176/32"
     destination_address_prefix = "*"
   }
 
@@ -105,26 +105,14 @@ resource "azurerm_network_security_group" "azure_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*" 
     destination_port_range     = 80
-    source_address_prefix      = "*" 
+    source_address_prefix      = "188.61.92.176/32" 
     destination_address_prefix = "*" 
-  }
-
-  security_rule {
-    name                       = "Allow-ICMP"
-    priority                   = 1200
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Icmp"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
   }
 
 }
 
 resource "azurerm_network_interface_security_group_association" "azure_nisga_ce" {
-  network_interface_id    = azurerm_network_interface.azure_nic_ce.id
+  network_interface_id    = azurerm_network_interface.nic_mgmt.id
   network_security_group_id = azurerm_network_security_group.azure_nsg.id
 }
 
