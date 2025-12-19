@@ -13,9 +13,7 @@ locals {
 variable "f5_license_key" {
   description = "Dein F5 BYOL Lizenzschlüssel"
   type        = string
-  // sensitive   = true
-  default = "OWRFG-OEAZN-JQFVI-NSOKU-LUOTGFU"
-  // default = "LXINY-FSZDI-UOGXU-KUCHW-KTDYHPG"
+  sensitive   = true
 }
 
 variable "admin_password" {
