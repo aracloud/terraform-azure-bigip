@@ -23,7 +23,7 @@ resource "random_id" "random_id" {
 # Resource Group & Netzwerk
 #########################
 resource "azurerm_resource_group" "rg" {
-  name     = "${var.prefix}-rg-f5-bigip-${random_id.random_id.hex}"
+  name     = "${var.prefix}-rg-${random_id.random_id.hex}"
   location = "${var.azure-location}"
   tags = {
     source = var.tag_source_git
@@ -34,7 +34,7 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = "vnet-f5"
+  name                = "f5-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -56,7 +56,7 @@ resource "azurerm_public_ip" "mgmt_ip" {
 }
 
 resource "azurerm_network_interface" "nic_mgmt" {
-  name                = "nic-mgmt"
+  name                = "f5-nic-mgmt"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -86,13 +86,13 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "Allow-65500"
+    name                       = "Allow-8443"
     priority                   = 1100
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_range     = 65500
+    destination_port_range     = 8443
     source_address_prefix      = "188.61.92.176/32"
     destination_address_prefix = "*"
   }
@@ -101,7 +101,7 @@ resource "azurerm_network_security_group" "nsg" {
     name                       = "Allow-80"
     priority                   = 1101
     direction                  = "Inbound"
-    access                     = "Deny"
+    access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*" 
     destination_port_range     = 80
@@ -111,38 +111,9 @@ resource "azurerm_network_security_group" "nsg" {
 
 }
 
-resource "azurerm_network_interface_security_group_association" "azure_nisga_ce" {
+resource "azurerm_network_interface_security_group_association" "nisga" {
   network_interface_id    = azurerm_network_interface.nic_mgmt.id
   network_security_group_id = azurerm_network_security_group.nsg.id
-}
-
-#########################
-# Cloud-Init Script (User Data)
-#########################
-data "template_file" "cloudinit" {
-  template = <<-EOT
-    #cloud-config
-    write_files:
-      - path: /config/startup-license.sh
-        permissions: '0755'
-        content: |
-          #!/bin/bash
-          echo "Starte automatische Lizenzaktivierung..."
-          tmsh modify sys global-settings gui-setup disabled
-          tmsh modify sys httpd ssl-port 443
-          tmsh modify sys ntp servers add { 0.pool.ntp.org 1.pool.ntp.org }
-          tmsh modify sys dns name-servers add { 8.8.8.8 1.1.1.1 }
-          tmsh save sys config
-          tmsh install sys license registration-key ${"f5_license_key"}
-          tmsh save sys config
-          echo "BIG-IP Lizenz aktiviert."
-    runcmd:
-      - [ bash, /config/startup-license.sh ]
-  EOT
-
-  vars = {
-    f5_license_key = var.f5_license_key
-  }
 }
 
 #########################
@@ -186,7 +157,7 @@ resource "azurerm_linux_virtual_machine" "bigip" {
     storage_account_type = "Standard_LRS"
   }
 
-  custom_data = base64encode(data.template_file.cloudinit.rendered)
+  custom_data = base64encode(local.cloudinit)
 
   tags = {
     environment = "demo"

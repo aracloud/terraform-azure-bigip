@@ -1,5 +1,8 @@
 locals {
   today-timestamp = timestamp()
+  cloudinit = templatefile("${path.module}/cloudinit.tpl", {
+    license_key = var.f5_license_key
+  })
 }
 
 
