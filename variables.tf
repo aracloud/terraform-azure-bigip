@@ -2,7 +2,7 @@ locals {
   today-timestamp = timestamp()
   //cloudinit = templatefile("${path.module}/cloudinit.tpl", {
   //  f5_license_key = var.f5_license_key
-  })
+  //})
 }
 
 variable "f5_license_key" {
