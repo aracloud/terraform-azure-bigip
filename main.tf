@@ -19,9 +19,9 @@ resource "random_id" "random_id" {
   byte_length = 2
 }
 
-#########################
-# Resource Group & Netzwerk
-#########################
+####################################################
+# Resource Group & Network
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-rg-${random_id.random_id.hex}"
   location = "${var.azure-location}"
@@ -116,9 +116,9 @@ resource "azurerm_network_interface_security_group_association" "nisga" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-#########################
+##################################################
 # Virtual Machine (F5 BIG-IP BYOL)
-#########################
+
 resource "azurerm_linux_virtual_machine" "bigip" {
   name                = "f5-bigip-byol"
   location            = azurerm_resource_group.rg.location

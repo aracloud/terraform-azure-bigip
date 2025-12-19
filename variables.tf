@@ -5,21 +5,15 @@ locals {
   })
 }
 
-
-#########################
-# Variablen (Passe hier an)
-#########################
-
 variable "f5_license_key" {
-  description = "Dein F5 BYOL Lizenzschlüssel"
+  description = "eval byol license key"
   type        = string
   sensitive   = true
 }
 
 variable "admin_password" {
-  description = "Admin Passwort für BIG-IP"
+  description = "BIG-IP admin password"
   type        = string
-  default     = "P@ssw0rd1234!"
 }
 
 variable "prefix" {
