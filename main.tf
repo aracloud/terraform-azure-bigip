@@ -140,14 +140,14 @@ resource "azurerm_linux_virtual_machine" "bigip" {
 
   source_image_reference {
     publisher = "f5-networks"
-    offer     = "f5-big-ip-byol"
-    sku       = "f5-big-all-2slot-byol"
+    offer     = "f5-big-ip-best"
+    sku       = "f5-big-best-plus-hourly-25mbps"
     version   = "17.5.103241"
   }
 
   plan {
-    name      = "f5-big-all-2slot-byol"
-    product   = "f5-big-ip-byol"
+    name      = "f5-big-best-plus-hourly-25mbps"
+    product   = "f5-big-ip-best"
     publisher = "f5-networks"
 }
 
@@ -157,7 +157,7 @@ resource "azurerm_linux_virtual_machine" "bigip" {
     storage_account_type = "Standard_LRS"
   }
 
-  custom_data = base64encode(local.cloudinit)
+  // custom_data = base64encode(local.cloudinit)
 
   tags = {
     environment = "demo"
