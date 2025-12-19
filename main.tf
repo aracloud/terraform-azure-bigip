@@ -69,7 +69,7 @@ resource "azurerm_network_interface" "nic_mgmt" {
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  name                = "${var.prefix}-nsg"
+  name                = "f5-nsg"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
