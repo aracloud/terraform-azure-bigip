@@ -40,3 +40,8 @@ variable "tag_owner" {
 variable "tag_source_host" {
   type = string
 }
+
+# pool member backend ip address
+variable "origin_ip1" {
+  type = string
+}

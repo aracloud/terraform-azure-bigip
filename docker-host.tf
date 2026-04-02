@@ -39,9 +39,9 @@ resource "azurerm_network_interface" "azure_nic_dkr" {
 
   ip_configuration {
     name                          = "${var.prefix}-ipconfig"
-    subnet_id                     = azurerm_subnet.azure_sn.id
+    subnet_id                     = azurerm_subnet.mgmt.id
     private_ip_address_allocation = "Static"
-    private_ip_address            = var.xc_origin_ip1
+    private_ip_address            = var.origin_ip1
     public_ip_address_id          = azurerm_public_ip.azure_pip_dkr.id
   }
 }
