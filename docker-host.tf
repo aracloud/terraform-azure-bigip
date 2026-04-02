@@ -2,8 +2,8 @@
 resource "azurerm_linux_virtual_machine" "azure_dkr" {
   depends_on          = [azurerm_network_interface_security_group_association.azure_nisga_dkr]
   name                = "${var.prefix}-dkr-node"
-  resource_group_name = azurerm_resource_group.azure_rg.name
-  location            = azurerm_resource_group.azure_rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   size                = var.docker-instance-type
   admin_username      = var.docker-node-user
 
@@ -34,8 +34,8 @@ resource "azurerm_linux_virtual_machine" "azure_dkr" {
 
 resource "azurerm_network_interface" "azure_nic_dkr" {
   name                = "${var.prefix}-nic-dkr"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
 
   ip_configuration {
     name                          = "${var.prefix}-ipconfig"
@@ -53,7 +53,7 @@ resource "azurerm_network_interface_security_group_association" "azure_nisga_dkr
 
 resource "azurerm_public_ip" "azure_pip_dkr" {
   name                = "${var.prefix}-pip-dkr"
-  location            = azurerm_resource_group.azure_rg.location
-  resource_group_name = azurerm_resource_group.azure_rg.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
 }
