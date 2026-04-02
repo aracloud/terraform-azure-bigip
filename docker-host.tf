@@ -48,7 +48,7 @@ resource "azurerm_network_interface" "azure_nic_dkr" {
 
 resource "azurerm_network_interface_security_group_association" "azure_nisga_dkr" {
   network_interface_id    = azurerm_network_interface.azure_nic_dkr.id
-  network_security_group_id = azurerm_network_security_group.azure_nsg.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 resource "azurerm_public_ip" "azure_pip_dkr" {
